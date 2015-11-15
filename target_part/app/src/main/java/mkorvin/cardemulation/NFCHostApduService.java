@@ -14,6 +14,7 @@ public class NFCHostApduService extends HostApduService {
                 return getWelcomeMessage();
             }
             else {
+
                 Log.i("HCEDEMO", "Received: " + new String(apdu));
                 return getNextMessage();
             }
