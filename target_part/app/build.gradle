@@ -6,7 +6,7 @@ model {
 
         defaultConfig.with {
             applicationId = "mkorvin.cardemulation"
-            minSdkVersion.apiLevel = 15
+            minSdkVersion.apiLevel = 19
             targetSdkVersion.apiLevel = 22
             versionCode = 1
             versionName = "1.0"

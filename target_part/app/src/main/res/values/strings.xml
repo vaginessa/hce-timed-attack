@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Card Emulation</string>
+    <string name="servicedesc">ServiceDesc</string>
+    <string name="aiddescription">AID Description</string>
+</resources>
