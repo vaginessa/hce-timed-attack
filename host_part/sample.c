@@ -45,6 +45,8 @@ int main(void)
                     0xF0, 0xA0, 0x00, 0x00, 0x62, 0x03, 0x01, 0x0C, 0x06, 0x01 };
 
     BYTE cmd2[] = { 0x00, 0x00, 0x00, 0x00 };
+    BYTE RequestPIN[] = { 0x00, 0x20, 0x00, 0x01, 0x08, 0x31, 0x32,
+                          0x33, 0x34, 0xFF, 0xFF, 0xFF, 0xFF };
 
     unsigned int i;
 
@@ -101,6 +103,18 @@ int main(void)
         printf("%c", pbRecvBuffer[i]);
     }
     printf("\n");
+
+    dwRecvLength = sizeof(pbRecvBuffer);
+    rv = SCardTransmit(hCard, &pioSendPci, RequestPIN, sizeof(RequestPIN),
+                       NULL, pbRecvBuffer, &dwRecvLength);
+    CHECK("SCardTransmit", rv)
+
+    printf("response: ");
+    for(i = 0; i < dwRecvLength; i++) {
+        printf("%c", pbRecvBuffer[i]);
+    }
+    printf("\n");
+
 
     rv = SCardDisconnect(hCard, SCARD_LEAVE_CARD);
     CHECK("SCardDisconnect", rv)

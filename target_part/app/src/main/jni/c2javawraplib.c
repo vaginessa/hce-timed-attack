@@ -1,6 +1,8 @@
 #include <jni.h>
 
 #include "rsa.h"
+#include <android/log.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -873,130 +875,26 @@ void rsa_decryption(BigInt d, BigInt n, BigInt text)
     printf("\n");
 }
 
-int choose_func(void)
+bool choose_func(unsigned char *input)
 {
-    BigInt res;
-    BigInt num_A;
-    BigInt num_B;
-    BigInt num_M;
-    BigInt X;
-    BigInt Y;
+    (void) input;
 
-    int i = 0;
-    char input_string[MAX_NUM_SIZE];
-    int cmd = 0;
-
-    clean_bignum(&num_A, 0);
-    clean_bignum(&num_B, 0);
-    clean_bignum(&num_M, 0);
-    clean_bignum(&X, 0);
-    clean_bignum(&Y, 0);
-
-    // Считать команду
-    scanf("%d", &cmd);
-
-    //Считать значения, необходимые для выбранной операции
-    if (cmd < 7) {
-        printf("input number A: ");
-        memset(input_string, '\0', MAX_NUM_SIZE);
-        scanf("%s", &input_string);
-        fill_bignum(&num_A, &input_string);
-
-        printf("input number B: ");
-        memset(input_string, '\0', MAX_NUM_SIZE);
-        scanf("%s", &input_string);
-        fill_bignum(&num_B, &input_string);
-    }
-
-    if (cmd < 4) {
-        printf("input number M: ");
-        memset(input_string, '\0', MAX_NUM_SIZE);
-        scanf("%s", &input_string);
-        fill_bignum(&num_M, &input_string);
-    }
-
-    // Выполнить выбранную операцию
-    switch(cmd) {
-        case 1:
-            res = powmod_bignum(num_A, num_B, num_M);
-            printf("modular power(A, B, M) = R\n");
-            break;
-        case 2:
-            res = multmod_bignum(num_A, num_B, num_M);
-            printf("modular multiplication(A, B, M) = R\n");
-            break;
-        case 3:
-            res = add_mod_bignum(num_A, num_B, num_M);
-            printf("modular addition(A, B, M) = R\n");
-            break;
-        case 4:
-            res = sub_bignum(num_A, num_B);
-            printf("subtraction(A, B) = R\n");
-            break;
-        case 5:
-            res = add_bignum(num_A, num_B);
-            printf("addition(A, B) = R\n");
-            break;
-        case 6:
-            res = euclidean(num_A, num_B, &X, &Y);
-            printf("GCD(A, B) = C\nA*X + B*Y = C\n");
-            break;
-        case 7:
-            rsa_encryption(&num_A, &num_B, &num_M);
-            rsa_decryption(num_A, num_B, num_M);
-            break;
-        default:
-            printf("strange command\n");
-            return 1;
-    }
-
-    // Вывести значения, используемые в соответствующей операции и результат
-    switch(cmd) {
-        case 1:
-        case 2:
-        case 3:
-            printf("A   ");
-            print_decimal_bignum(num_A);
-            printf("B   ");
-            print_decimal_bignum(num_B);
-            printf("M   ");
-            print_decimal_bignum(num_M);
-            printf("R   ");
-            print_decimal_bignum(res);
-            break;
-        case 4:
-        case 5:
-            printf("A   ");
-            print_decimal_bignum(num_A);
-            printf("B   ");
-            print_decimal_bignum(num_B);
-            printf("R   ");
-            print_decimal_bignum(res);
-            break;
-        case 6:
-            printf("A   ");
-            print_decimal_bignum(num_A);
-            printf("B   ");
-            print_decimal_bignum(num_B);
-            printf("C   ");
-            print_decimal_bignum(res);
-            printf("X   ");
-            print_decimal_bignum(X);
-            printf("Y   ");
-            print_decimal_bignum(Y);
-            break;
-    }
-
-    getchar();
-    getchar();
-
-    return 0;
+    return true;
 }
 
-JNIEXPORT jstring JNICALL
-Java_mkorvin_cardemulation_C2JavaWrapLib_encrypt(JNIEnv *env, jclass type) {
+JNIEXPORT jboolean JNICALL
+Java_mkorvin_cardemulation_C2JavaWrapLib_check_1pin(JNIEnv *env, jclass type, jbyteArray input) {
+    jboolean isCopy;
 
-    choose_func();
+    __android_log_print(ANDROID_LOG_DEBUG, "HCEDEMO", "\n this is log messge \n");
 
-    return (*env)->NewStringUTF(env, "123");
+    char *input_arr = (char*)(*env)->GetByteArrayElements(env, input, &isCopy);
+
+    jboolean res = choose_func(input_arr);
+
+    if(isCopy) {
+        (*env)->ReleaseByteArrayElements(env, input, input_arr, JNI_ABORT);
+    }
+
+    return res;
 }

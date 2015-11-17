@@ -20,6 +20,7 @@ model {
         moduleName = "security"
 
         cppFlags += "-std=c++11"
+        ldLibs += "log"
         stl = "stlport_static"
     }
     android.buildTypes {
