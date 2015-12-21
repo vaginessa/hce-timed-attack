@@ -6,7 +6,7 @@ SOURCE=sample.c
 
 PCSC_CFLAGS := $(shell pkg-config --cflags libpcsclite)
 LDFLAGS := $(shell pkg-config --libs libpcsclite)
-CFLAGS += $(PCSC_CFLAGS)
+CFLAGS += $(PCSC_CFLAGS) -std=c99
 
 sample: $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o sample $(LDFLAGS)

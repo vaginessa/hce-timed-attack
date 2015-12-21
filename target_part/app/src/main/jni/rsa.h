@@ -1,7 +1,3 @@
-//
-// Created by mkorvin on 31.10.15.
-//
-
 #ifndef CARD_EMULATION_RSA_H
 #define CARD_EMULATION_RSA_H
 
@@ -10,6 +6,7 @@ enum {
     TARGET_BASE = 256,
     SOURCE_BASE = 10,
     NULL_ANSI = 48,
+    MAX_MSG_LEN = 100000,
 };
 
 typedef struct {
@@ -27,8 +24,8 @@ extern void modular(BigInt *a, BigInt m);
 extern void print_bignum_target(BigInt a);
 extern BigInt powmod_bignum(BigInt a, BigInt b, BigInt m);
 extern BigInt euclidean(BigInt a, BigInt b, BigInt *x, BigInt *y);
-extern void rsa_encryption(BigInt *d, BigInt *n, BigInt *text);
-extern void rsa_decryption(BigInt d, BigInt n, BigInt text);
+extern jboolean rsa_encryption(char *text_str);
+extern void rsa_decryption(char *text_str);
 extern void elgamal(void);
 
 #endif //CARD_EMULATION_RSA_H

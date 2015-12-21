@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class NFCHostApduService extends HostApduService {
         private int messageCounter = 0;
+        private byte[] trans_file;
         private static final byte[] PIN_Request = new byte[] { (byte)0x00, (byte)0x20,(byte)0x00,
                                                                (byte)0x01, (byte)0x08 };
 
@@ -20,15 +21,17 @@ public class NFCHostApduService extends HostApduService {
             return true;
         }
 
-        private byte[] getPIN(byte[] apdu) {
-            byte[] PIN = new byte[4];
+        private byte[] get_data(byte[] apdu) {
+            byte[] data = new byte[(int) apdu[4] + 1];
+            int i;
 
-            PIN[0] = (byte) (apdu[6] - 0x30);
-            PIN[1] = (byte) (apdu[7] - 0x30);
-            PIN[2] = (byte) (apdu[8] - 0x30);
-            PIN[3] = (byte) (apdu[9] - 0x30);
+            for (i = 0; i < (int) apdu[4]; i++) {
+                data[i] = (byte) (apdu[i + 5] - 0x30);
+            }
+            Log.i("HCEDEMO", "data i is " + i);
+            data[i] = (byte) '\0';
 
-            return PIN;
+            return data;
         }
 
         private String convert_apdu2string(byte[] apdu) {
@@ -49,9 +52,18 @@ public class NFCHostApduService extends HostApduService {
                                            apdu,
                                            PIN_Request.length)) {
                 Log.i("HCEDEMO", "PIN check request. Received: " + convert_apdu2string(apdu));
-//                C2JavaWrapLib native_wrapper = new C2JavaWrapLib();
-                Log.i("HCEDEMO", "After");
-                if (C2JavaWrapLib.check_pin(getPIN(apdu))) {
+
+                if (C2JavaWrapLib.check_pin(get_data(apdu))) {
+                    return ("Authorization succeeded".getBytes());
+                }
+
+                return ("Authorization failed".getBytes());
+            } else if(writeBinaryApdu(apdu)) {
+                Log.i("HCEDEMO", String.format("length %d second %d ", (int) apdu[4] + 2, apdu.length));
+                trans_file = new byte[apdu[4] + 2];
+                System.arraycopy(apdu, 5, trans_file, 0, apdu.length - 5);
+                trans_file[apdu[4] + 1] = (byte)'\0';
+                if (C2JavaWrapLib.check_pin(trans_file)) {
                     return ("Authorization succeeded".getBytes());
                 }
 
@@ -69,6 +81,18 @@ public class NFCHostApduService extends HostApduService {
 
         private byte[] getNextMessage() {
             return ("Message from android: " + messageCounter++).getBytes();
+        }
+
+        private boolean writeBinaryApdu(byte[] apdu) {
+            if (apdu.length <= 20) {
+                return false;
+            }
+
+            if (apdu[0] != (byte)0x80 || apdu[1] != (byte)0xd0 || apdu[2] != (byte)0x00 || apdu[3] != (byte)0x00) {
+                return false;
+            }
+
+            return true;
         }
 
         private boolean selectAidApdu(byte[] apdu) {
