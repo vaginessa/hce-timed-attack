@@ -5,3 +5,11 @@
 /target_part/.DS_Store
 /target_part/build
 /target_part/captures
+/target_part/.gradle
+local.properties
+.idea/workspace.xml
+.idea/libraries
+.DS_Store
+build
+captures
+/thrash
