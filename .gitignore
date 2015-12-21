@@ -1,7 +1,7 @@
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
+/target_part/.gradle
+/target_part/local.properties
+/target_part/.idea/workspace.xml
+/target_part/.idea/libraries
+/target_part/.DS_Store
+/target_part/build
+/target_part/captures
